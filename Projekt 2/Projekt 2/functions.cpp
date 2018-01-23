@@ -1,31 +1,30 @@
 #include "stdafx.h"
 #include "header.h"
 
-using namespace std;
 
-void komunikatbledu(string nazwapliku) {
-	fstream wyjscie;
-	wyjscie.open(nazwapliku, ios::out);
-	string linia;
+void komunikatbledu(std::string nazwapliku) {
+	std::fstream wyjscie;
+	wyjscie.open(nazwapliku, std::ios::out);
+	std::string linia;
 	wyjscie << "Dzialanie zawiera bledy!";
 	wyjscie.close();
 }
 
 
-vector<char> wczytywanie(string nazwapliku)				//funkcja wczytujaca dane z pliku
+std::vector<char> wczytywanie(std::string nazwapliku)				//funkcja wczytujaca dane z pliku
 {
-	vector<char> wynik;
-	fstream wejscie;
-	wejscie.open(nazwapliku, ios::in);
+	std::vector<char> wynik;
+	std::fstream wejscie;
+	wejscie.open(nazwapliku, std::ios::in);
 	if (wejscie.good() == false)
 	{
 		std::cout << "Blad pliku wejsciowego!";
 		exit(0);
 
 	}
-	string linia;
-	while (getline(wejscie, linia)) {
-		stringstream liniastream = stringstream(linia);
+	std::string linia;
+	while (std::getline(wejscie, linia)) {
+		std::stringstream liniastream = std::stringstream(linia);
 		while (!liniastream.eof()) {
 			char znak;
 			liniastream >> znak;
@@ -38,14 +37,14 @@ vector<char> wczytywanie(string nazwapliku)				//funkcja wczytujaca dane z pliku
 	return wynik;
 }
 
-vector<string> normalizacja(vector<char> dzialanie, string nazwaplikuwyjsciowego) {
-	vector<string> wynik;
+std::vector<std::string> normalizacja(std::vector<char> dzialanie, std::string nazwaplikuwyjsciowego) {
+	std::vector<std::string> wynik;
 	char temp;
 	int iterator;
 	int przelacznik = 3;
 	for (int i = 0; i < dzialanie.size(); i++) {
 		temp = dzialanie[i];
-		string liczba, znak;
+		std::string liczba, znak;
 		switch (temp) {
 		case '0':;
 		case '1':;
@@ -109,8 +108,8 @@ vector<string> normalizacja(vector<char> dzialanie, string nazwaplikuwyjsciowego
 	return wynik;
 }
 
-vector<string> obs³uga_liczb_ujemnych(vector<string> dzialanie) {
-	vector<string> wynik;
+std::vector<std::string> obs³uga_liczb_ujemnych(std::vector<std::string> dzialanie) {
+	std::vector<std::string> wynik;
 	for (int i = 0; i < dzialanie.size(); i++) {
 		if (dzialanie[i] == "-") {
 			if (i - 1 < 0) {
@@ -145,7 +144,7 @@ vector<string> obs³uga_liczb_ujemnych(vector<string> dzialanie) {
 	return wynik;
 }
 
-bool czystringjestliczba(string string) {
+bool czystringjestliczba(std::string string) {
 	bool wynik = false;
 	int kropki = 0;
 
@@ -167,7 +166,7 @@ bool czystringjestliczba(string string) {
 	return wynik;
 }
 
-bool sprawdzanieargumentowfunkcji(vector<string> dzialanie) {
+bool sprawdzanieargumentowfunkcji(std::vector<std::string> dzialanie) {
 	bool wynik1 = true;
 	bool wynik2 = true;
 	int warstwa1 = 0;
@@ -263,7 +262,7 @@ bool sprawdzanieargumentowfunkcji(vector<string> dzialanie) {
 
 }
 
-bool wykrywaniebledow(vector<string> dzialanie) {
+bool wykrywaniebledow(std::vector<std::string> dzialanie) {
 	int lnawiasy = 0;
 	int pnawiasy = 0;
 	for (int i = 0; i < dzialanie.size(); i++) {        //sprawdzanie ilosci lewych i prawych nawiasow
@@ -274,35 +273,33 @@ bool wykrywaniebledow(vector<string> dzialanie) {
 		return false;
 	}
 
+	//zbiory wyrazen ktore moga wystapic po lub przed okreslonym wyrazeniu
+	std::set<std::string> funkcje = { "sin" ,"cos","tg","ctg","exp","log","sqrt","abs","ln","pow" };	//wystepowanie:	po prawej od: "+" "-" "*" "/" "," po lewej od: "("
+	std::set<std::string> operatory = { "+" ,"-","*","/" };												//wystepowanie:	po lewej od: "("
+	std::set<std::string> zbior1 = { "+" ,"-","*","/",")","," };										//wystepowanie:	po prawej od: liczb "e" "pi" ")"
+	std::set<std::string> zbior2 = { "+" ,"-","*","/","(","," };										//wystepowanie:	po lewej od: liczb "e" "pi"
+	std::set<std::string> zbior3 = { "e","pi","(","-" };												//wystepowanie:	po prawej od: "("
+	std::set<std::string> zbior4 = { "e" ,"pi",")" };													//wystepowanie:	po lewej od: ")" "+" "-" "*" "/" ","
+	std::set<std::string> zbior5 = { "e" ,"pi","(" };													//wystepowanie:	po prawej od: "+" "*" "/" ","
+	std::set<std::string> zbior6 = { "e" ,"pi",")",",","(" };											//wystepowanie:	po prawej od: "-"
+	std::set<std::string> zbior7 = { "+" ,"-","*","/","(","," };										//wystepowanie:	po lewej od: funkcje
 
-	set<string> znakiliczbap = { "+" ,"-","*","/",")",",", };
-	set<string> znakiliczbal = { "+" ,"-","*","/","(",",", };
-	set<string> funkcje = { "sin" ,"cos","tg","ctg","exp","log","sqrt","abs","ln","pow" };
-	set<string> epilnawiasminus = { "e","pi","(","-" };
-	set<string> operatory = { "+" ,"-","*","/" };
-	set<string> epipnawias = { "e" ,"pi",")" };
-	set<string> epilnawias = { "e" ,"pi","(" };
-	set<string> znakiminusp = { "e" ,"pi",")",",","(" };
-	set<string> znakifunkcjel = { "+" ,"-","*","/","(","," };
 
-
-
+	//porownuje czy znaki po prawej i lewej stronie od kazdego znaku w dzialaniu sa poprawne, jesli sa niepoprawne funkcja zwraca false
 	for (int i = 0; i < dzialanie.size(); i++) {
 		if (czystringjestliczba(dzialanie[i])) {
 			if (i == dzialanie.size() - 1) {
 				;
-			}else if (znakiliczbap.find(dzialanie[i + 1]) != znakiliczbap.end()) {
+			}else if (zbior1.find(dzialanie[i + 1]) != zbior1.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}else if (znakiliczbal.find(dzialanie[i - 1]) != znakiliczbal.end()) {
+			}else if (zbior2.find(dzialanie[i - 1]) != zbior2.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
@@ -310,388 +307,312 @@ bool wykrywaniebledow(vector<string> dzialanie) {
 
 			if (i == dzialanie.size() - 1) {
 				;
-			}else
-			if (znakiliczbap.find(dzialanie[i + 1]) != znakiliczbap.end()) {
+			}else if (zbior1.find(dzialanie[i + 1]) != zbior1.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}else
-			if (znakiliczbal.find(dzialanie[i - 1]) != znakiliczbal.end()) {
+			}else if (zbior2.find(dzialanie[i - 1]) != zbior2.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "pi") {
 			if (i == dzialanie.size() - 1) {
 				;
-			}else
-			if (znakiliczbal.find(dzialanie[i + 1]) != znakiliczbal.end()) {
+			}else if (zbior1.find(dzialanie[i + 1]) != zbior1.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}else
-			if (znakiliczbal.find(dzialanie[i - 1]) != znakiliczbal.end()) {
+			}else if (zbior2.find(dzialanie[i - 1]) != zbior2.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "(") {
 			if (czystringjestliczba(dzialanie[i + 1])) {
 				;
-			}
-			else if (epilnawiasminus.find(dzialanie[i + 1]) != epilnawiasminus.end()) {
+			}else if (zbior3.find(dzialanie[i + 1]) != zbior3.end()) {
 					;
-			}
-			else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
+			}else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
 					;
-			}else 
-			{
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (operatory.find(dzialanie[i - 1]) != operatory.end()) {
+			}else if (operatory.find(dzialanie[i - 1]) != operatory.end()) {
 				;
-			}
-			else if (funkcje.find(dzialanie[i - 1]) != funkcje.end()) {
+			}else if (funkcje.find(dzialanie[i - 1]) != funkcje.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == ")") {
 			if (i == dzialanie.size() - 1) {
 				;
-			}
-			else if (znakiliczbap.find(dzialanie[i + 1]) != znakiliczbap.end()) {
+			}else if (zbior1.find(dzialanie[i + 1]) != zbior1.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (czystringjestliczba(dzialanie[i - 1])) {
 				;
-			}
-			else if (epipnawias.find(dzialanie[i - 1]) != epipnawias.end()) {
+			}else if (zbior4.find(dzialanie[i - 1]) != zbior4.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "+") {
 			if (czystringjestliczba(dzialanie[i + 1])) {
 				;
-			}
-			else if (epilnawias.find(dzialanie[i + 1]) != epilnawias.end()) {
+			}else if (zbior5.find(dzialanie[i + 1]) != zbior5.end()) {
 				;
-			}
-			else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
+			}else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (czystringjestliczba(dzialanie[i - 1])) {
 				;
-			}
-			else if (epipnawias.find(dzialanie[i - 1]) != epipnawias.end()) {
+			}else if (zbior4.find(dzialanie[i - 1]) != zbior4.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "-") {
 			if (czystringjestliczba(dzialanie[i + 1])) {
 				;
-			}
-			else if (znakiminusp.find(dzialanie[i + 1]) != znakiminusp.end()) {
+			}else if (zbior6.find(dzialanie[i + 1]) != zbior6.end()) {
 				;
-			}
-			else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
+			}else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (czystringjestliczba(dzialanie[i - 1])) {
+			}else if (czystringjestliczba(dzialanie[i - 1])) {
 				;
-			}
-			else if (epipnawias.find(dzialanie[i - 1]) != epipnawias.end()) {
+			}else if (zbior4.find(dzialanie[i - 1]) != zbior4.end()) {
 				;
-			}
-			else if (dzialanie[i - 1] == "(") {
+			}else if (dzialanie[i - 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "*") {
 			if (czystringjestliczba(dzialanie[i + 1])) {
 				;
-			}
-			else if (epilnawias.find(dzialanie[i + 1]) != epilnawias.end()) {
+			}else if (zbior5.find(dzialanie[i + 1]) != zbior5.end()) {
 				;
-			}
-			else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
+			}else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (czystringjestliczba(dzialanie[i - 1])) {
 				;
-			}
-			else if (epipnawias.find(dzialanie[i - 1]) != epipnawias.end()) {
+			}else if (zbior4.find(dzialanie[i - 1]) != zbior4.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "/") {
 			if (czystringjestliczba(dzialanie[i + 1])) {
 				;
-			}
-			else if (epilnawias.find(dzialanie[i + 1]) != epilnawias.end()) {
+			}else if (zbior5.find(dzialanie[i + 1]) != zbior5.end()) {
 				;
-			}
-			else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
+			}else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (czystringjestliczba(dzialanie[i - 1])) {
 				;
-			}
-			else if (epipnawias.find(dzialanie[i - 1]) != epipnawias.end()) {
+			}else if (zbior4.find(dzialanie[i - 1]) != zbior4.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == ",") {
 			if (czystringjestliczba(dzialanie[i + 1])) {
 				;
-			}
-			else if (epilnawias.find(dzialanie[i + 1]) != epilnawias.end()) {
+			}else if (zbior5.find(dzialanie[i + 1]) != zbior5.end()) {
 				;
-			}
-			else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
+			}else if (funkcje.find(dzialanie[i + 1]) != funkcje.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (czystringjestliczba(dzialanie[i - 1])) {
 				;
-			}
-			else if (epipnawias.find(dzialanie[i - 1]) != epipnawias.end()) {
+			}else if (zbior4.find(dzialanie[i - 1]) != zbior4.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "sin") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
-				continue;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
 				;
-			}
-			else {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
+				;
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "cos") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "tg") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "ctg") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "exp") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "log") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "sqrt") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "abs") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "ln") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 		}
 		else if (dzialanie[i] == "pow") {
 			if (dzialanie[i + 1] == "(") {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
 			if (i == 0) {
 				;
-			}
-			else if (znakifunkcjel.find(dzialanie[i - 1]) != znakifunkcjel.end()) {
+			}else if (zbior7.find(dzialanie[i - 1]) != zbior7.end()) {
 				;
-			}
-			else {
+			}else {
 				return false;
 			}
-		}
-		else {
+		}else {
 			return false;
 		}
 	}
 
 
 
-	if (!sprawdzanieargumentowfunkcji(dzialanie)) {
+	if (!sprawdzanieargumentowfunkcji(dzialanie)) {			//funkcja sprawdza czy funkcje posiadaja odpowiednie argumenty
 		return false;
 	}
 
@@ -701,12 +622,14 @@ bool wykrywaniebledow(vector<string> dzialanie) {
 
 }
 
-vector<string> przeksztalcenienaonp(vector<string> dzialanie) {
-	stack <string> stos;
-	vector<string> wyjscie;
-	string temp;
+std::vector<std::string> przeksztalcenienaonp(std::vector<std::string> dzialanie, std::string sciezkawyjscia) {
+	std::stack <std::string> stos;				//utworzenie stosu wykorzystywanego przy przeksztalceniu na ONP
+	std::vector<std::string> wyjscie;			//utworzenie wyjscia
+	std::string temp;							//pomocniczy string
 
-	for (int i = 0; i < dzialanie.size(); i++) {
+
+	//implementacja algorytmu na przeksztalcenie na ONP
+	for (int i = 0; i < dzialanie.size(); i++) {			//petla przez cale dzialanie
 		if (dzialanie[i] == "e") {
 			wyjscie.push_back(dzialanie[i]);
 		}
@@ -719,7 +642,7 @@ vector<string> przeksztalcenienaonp(vector<string> dzialanie) {
 		else if (dzialanie[i] == ")") {
 			while (stos.top() != "(") {
 				if (stos.empty()) {
-					komunikatbledu("wyjscie.txt");
+					komunikatbledu(sciezkawyjscia);
 					exit(0);
 				}
 				else {
@@ -874,7 +797,7 @@ vector<string> przeksztalcenienaonp(vector<string> dzialanie) {
 		else if (dzialanie[i] == ",") {
 			while (dzialanie[i] == "(") {
 				if (stos.empty()) {
-					komunikatbledu("wyjscie.txt");
+					komunikatbledu(sciezkawyjscia);
 					exit(0);
 				}
 				else {
@@ -920,11 +843,11 @@ vector<string> przeksztalcenienaonp(vector<string> dzialanie) {
 	}
 	while (!stos.empty()) {
 		if (stos.top() == "(") {
-			cout << "Dzialanie zawiera bledy!";
+			komunikatbledu(sciezkawyjscia);
 			exit(0);
 		}
 		else if (stos.top() == ")") {
-			cout << "Dzialanie zawiera bledy!";
+			komunikatbledu(sciezkawyjscia);
 			exit(0);
 		}
 		else {
@@ -935,33 +858,33 @@ vector<string> przeksztalcenienaonp(vector<string> dzialanie) {
 	return wyjscie;
 }
 
-double obliczanieonp(vector<string> dzialanie) {
-	double wynik;
-	stack <string> stos;
+double obliczanieonp(std::vector<std::string> dzialanie) {
+	double wynik; //ostateczny wynik dzialania
+	std::stack <std::string> stos; //utworzenie stosu wykorzystywanego do obliczania wyrazenia ONP
 	for (int i = 0; i < dzialanie.size(); i++) {
 		if (dzialanie[i] == "e") {
-			stos.push("2.71828182845904523536028747135266249775724709369995");
+			stos.push("2.71828182845904523536028747135266249775724709369995");  //zamiana e na przyblizona wartosc
 		}
 		else if (dzialanie[i] == "pi") {
-			stos.push("3.141592653589793238462643383279502884197169399375105");
+			stos.push("3.141592653589793238462643383279502884197169399375105"); //zamiana pi na przyblizona wartosc
 		}
 		else if (dzialanie[i] == "+") {
-			double liczba1, liczba2, wynik;
-			string liczba, wynikstring;
-			liczba = stos.top();
-			liczba1 = atof(liczba.c_str());
-			stos.pop();
-			liczba = stos.top();
-			liczba2 = atof(liczba.c_str());
-			stos.pop();
-			wynik = liczba1 + liczba2;
-			wynikstring = to_string(wynik);
-			stos.push(wynikstring);
+			double liczba1, liczba2, wynik;		//pomocnicze zmienne
+			std::string liczba, wynikstring;	//pomocnicze stringi	
+			liczba = stos.top();		//pobranie stringa liczba ze stosu
+			liczba1 = atof(liczba.c_str());		//zamiana string na double
+			stos.pop();						//usuniecie elementu ze stosu
+			liczba = stos.top();			//pobranie drugiego stringa ze stosu
+			liczba2 = atof(liczba.c_str());		//zamiana string na double
+			stos.pop();						//usuniecie elementu ze stosu
+			wynik = liczba1 + liczba2;		//wykonanie dzialania
+			wynikstring = std::to_string(wynik);	//zamiana wyniku typu double na string
+			stos.push(wynikstring);		//wepchniecie wyniku na stos
 
 		}
 		else if (dzialanie[i] == "-") {
 			double liczba1, liczba2, wynik;
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
@@ -969,12 +892,12 @@ double obliczanieonp(vector<string> dzialanie) {
 			liczba2 = atof(liczba.c_str());
 			stos.pop();
 			wynik = liczba2 - liczba1;
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "*") {
 			double liczba1, liczba2, wynik;
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
@@ -982,12 +905,12 @@ double obliczanieonp(vector<string> dzialanie) {
 			liczba2 = atof(liczba.c_str());
 			stos.pop();
 			wynik = liczba1 * liczba2;
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "/") {
 			double liczba1, liczba2, wynik;
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
@@ -995,66 +918,66 @@ double obliczanieonp(vector<string> dzialanie) {
 			liczba2 = atof(liczba.c_str());
 			stos.pop();
 			wynik = (liczba2 / liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "sin") {
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			double liczba1, wynik;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
-			liczba1 = liczba1 * 0.0174533;
+			liczba1 = liczba1 * 0.0174533; //zamiana stopni na radiany
 			stos.pop();
 			wynik = sin(liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "cos") {
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			double liczba1, wynik;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			liczba1 = liczba1 * 0.0174533;
 			stos.pop();
 			wynik = cos(liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "tg") {
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			double liczba1, wynik;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			liczba1 = liczba1 * 0.0174533;
 			stos.pop();
 			wynik = tan(liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "ctg") {
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			double liczba1, wynik;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			liczba1 = liczba1 * 0.01745329;
 			stos.pop();
 			wynik = 1 / tan(liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "exp") {
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			double liczba1, wynik;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
 			wynik = exp(liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "log") {
 			double liczba1, liczba2, wynik;
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
@@ -1062,12 +985,12 @@ double obliczanieonp(vector<string> dzialanie) {
 			liczba2 = atof(liczba.c_str());
 			stos.pop();
 			wynik = log(liczba2) / log(liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "sqrt") {
 			double liczba1, liczba2, wynik;
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
@@ -1075,32 +998,32 @@ double obliczanieonp(vector<string> dzialanie) {
 			liczba2 = atof(liczba.c_str());
 			stos.pop();
 			wynik = pow(liczba2, 1 / liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "abs") {
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			double liczba1, wynik;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
 			wynik = abs(liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "ln") {
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			double liczba1, wynik;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
 			wynik = log(liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else if (dzialanie[i] == "pow") {
 			double liczba1, liczba2, wynik;
-			string liczba, wynikstring;
+			std::string liczba, wynikstring;
 			liczba = stos.top();
 			liczba1 = atof(liczba.c_str());
 			stos.pop();
@@ -1108,7 +1031,7 @@ double obliczanieonp(vector<string> dzialanie) {
 			liczba2 = atof(liczba.c_str());
 			stos.pop();
 			wynik = pow(liczba2, liczba1);
-			wynikstring = to_string(wynik);
+			wynikstring = std::to_string(wynik);
 			stos.push(wynikstring);
 		}
 		else {
@@ -1117,16 +1040,16 @@ double obliczanieonp(vector<string> dzialanie) {
 
 
 	}
-	string liczba;
+	std::string liczba;
 	liczba = stos.top();
 	wynik = atof(liczba.c_str());
 	return wynik;
 }
 
-void zapisdopliku(string nazwapliku, double wynik) {
-	fstream wyjscie;
-	wyjscie.open(nazwapliku, ios::out);
-	string linia;
+void zapisdopliku(std::string nazwapliku, double wynik) {
+	std::fstream wyjscie;
+	wyjscie.open(nazwapliku, std::ios::out);
+	std::string linia;
 	wyjscie << wynik;
 	wyjscie.close();
 }

@@ -10,15 +10,15 @@
 #include <string>
 #include <set>
 
-using namespace std;
 
-void komunikatbledu(string nazwapliku);
-vector<char> wczytywanie(string nazwapliku);
-vector<string> normalizacja(vector<char> dzialanie, string nazwaplikuwyjsciowego);
-vector<string> obs³uga_liczb_ujemnych(vector<string> dzialanie);
-bool czystringjestliczba(string string);
-bool sprawdzanieargumentowfunkcji(vector<string> dzialanie);
-bool wykrywaniebledow(vector<string> dzialanie);
-vector<string> przeksztalcenienaonp(vector<string> dzialanie);
-double obliczanieonp(vector<string> dzialanie);
-void zapisdopliku(string nazwapliku, double wynik);
+
+void komunikatbledu(std::string nazwapliku);
+std::vector<char> wczytywanie(std::string nazwapliku);
+std::vector<std::string> normalizacja(std::vector<char> dzialanie, std::string nazwaplikuwyjsciowego);
+std::vector<std::string> obs³uga_liczb_ujemnych(std::vector<std::string> dzialanie);
+bool czystringjestliczba(std::string string);
+bool sprawdzanieargumentowfunkcji(std::vector<std::string> dzialanie);
+bool wykrywaniebledow(std::vector<std::string> dzialanie);
+std::vector<std::string> przeksztalcenienaonp(std::vector<std::string> dzialanie,std::string sciezkawyjscia);
+double obliczanieonp(std::vector<std::string> dzialanie);
+void zapisdopliku(std::string nazwapliku, double wynik);
